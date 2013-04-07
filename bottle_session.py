@@ -113,4 +113,7 @@ class Session(object):
     def __len__(self):
         return self.rdb.hlen(self.session_hash)
 
-
+    def __iter__(self):
+        all_items = self.rdb.hgetall(self.session_hash)
+        for t in all_items.items():
+            yield t
