@@ -5,6 +5,15 @@ from bottle import request
 from bottle import response
 import uuid
 
+try:
+    from Crypto.Random import get_random_bytes
+    def getUuid():
+        return uuid.UUID(bytes=get_random_bytes(16))
+
+except ImportError:
+    def getUuid():
+        return uuid.uuid4()
+
 MAX_TTL = 30.0*24.0*3600.0 # 30 day maximum cookie limit
 
 class SessionPlugin(object):
@@ -79,7 +88,7 @@ class Session(object):
             self.newSessionId()
 
     def newSessionId(self):
-        uid = uuid.uuid4()
+        uid = getUuid()
         self.session_hash = 'session:%s'%str(uid)
         self.setCookie(uid.hex)
 
