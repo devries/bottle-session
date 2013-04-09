@@ -1,3 +1,9 @@
+"""
+Documentation goes here.
+"""
+
+__version__ = '0.1'
+
 import redis
 import inspect
 from bottle import PluginError
@@ -14,7 +20,7 @@ except ImportError:
     def getUuid():
         return uuid.uuid4()
 
-MAX_TTL = 30.0*24.0*3600.0 # 30 day maximum cookie limit
+MAX_TTL = 7*24*3600 # 7 day maximum cookie limit for sessions
 
 class SessionPlugin(object):
     name = 'session'
@@ -27,7 +33,7 @@ class SessionPlugin(object):
         self.cookie_name = cookie_name
         self.cookie_lifetime = cookie_lifetime
         self.keyword = keyword
-        self.connectionPool = None
+        self.connection_pool = None
 
     def setup(self,app):
         for other in app.plugins:
@@ -36,8 +42,8 @@ class SessionPlugin(object):
                 raise PluginError("Found another session plugin with "\
                         "conflicting settings (non-unique keyword).")
 
-            if self.connectionPool is None:
-                self.connectionPool = redis.ConnectionPool(host=self.host, port=self.port, db=self.db)
+            if self.connection_pool is None:
+                self.connection_pool = redis.ConnectionPool(host=self.host, port=self.port, db=self.db)
 
     def apply(self,callback,context):
         conf = context.config.get('session') or {}
@@ -47,7 +53,7 @@ class SessionPlugin(object):
             return callback
 
         def wrapper(*args,**kwargs):
-            r = redis.Redis(connection_pool=self.connectionPool)
+            r = redis.Redis(connection_pool=self.connection_pool)
             kwargs[self.keyword] = Session(r,self.cookie_name,self.cookie_lifetime)
             rv = callback(*args,**kwargs)
             return rv
@@ -55,7 +61,7 @@ class SessionPlugin(object):
 
 
 class Session(object):
-    def __init__(self,rdb,cookie_name='sid',cookie_lifetime=None):
+    def __init__(self,rdb,cookie_name='bottle.session',cookie_lifetime=None):
         self.rdb = rdb
         self.cookie_name = cookie_name
         if cookie_lifetime is None:
@@ -64,41 +70,41 @@ class Session(object):
         else:
             self.ttl = cookie_lifetime
             self.max_age = cookie_lifetime
-        cookie_value = self.getCookie()
+        cookie_value = self.get_cookie()
         if cookie_value:
-            self.validateSessionId(cookie_value)
+            self.validate_session_id(cookie_value)
         else:
-            self.newSessionId()
+            self.new_session_id()
 
         
-    def getCookie(self):
+    def get_cookie(self):
         uid_cookie = request.get_cookie(self.cookie_name)
         return uid_cookie
 
-    def setCookie(self,value):
+    def set_cookie(self,value):
         response.set_cookie(self.cookie_name,value,max_age=self.max_age,path='/')
 
-    def validateSessionId(self,cookie_value):
+    def validate_session_id(self,cookie_value):
         keycheck = 'session:%s'%str(uuid.UUID(cookie_value))
         if self.rdb.exists(keycheck):
             self.session_hash = keycheck
             self.rdb.expire(self.session_hash,self.ttl)
         
         else:
-            self.newSessionId()
+            self.new_session_id()
 
-    def newSessionId(self):
+    def new_session_id(self):
         uid = getUuid()
         self.session_hash = 'session:%s'%str(uid)
-        self.setCookie(uid.hex)
+        self.set_cookie(uid.hex)
 
     def destroy(self):
         self.rdb.delete(self.session_hash)
-        self.newSessionId()
+        self.new_session_id()
 
     def regenerate(self):
         oldhash = self.session_hash
-        self.newSessionId()
+        self.new_session_id()
         try:
             self.rdb.rename(oldhash,self.session_hash)
             self.rdb.expire(self.session_hash,self.ttl)
@@ -126,3 +132,26 @@ class Session(object):
         all_items = self.rdb.hgetall(self.session_hash)
         for t in all_items.items():
             yield t
+
+    def get(self,key,default=None):
+        retval = self.__getitem__(key)
+        if not retval:
+            retval = default
+
+        return retval
+
+    def has_key(self,key):
+        return self.__contains__(key)
+
+    def items(self):
+        all_items = self.rdb.hgetall(self.session_hash)
+        return all_items.items()
+
+    def keys(self):
+        all_items = self.rdb.hgetall(self.session_hash)
+        return all_items.keys()
+
+    def values(self):
+        all_items = self.rdb.hgetall(self.session_hash)
+        return all_items.values()
+
