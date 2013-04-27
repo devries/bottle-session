@@ -1,24 +1,22 @@
 #!/usr/bin/env python
 from distutils.core import setup
 
-from bottle_session import __version__
-from bottle_session import __doc__
 setup(
         name = 'bottle-session',
-        version = __version__,
+        version = '0.2',
         description = 'Redis based sessions for bottle.',
-        long_description = __doc__,
+        long_description = open('README.md').read(),
         author = 'Christopher De Vries',
         author_email = 'devries@idolstarastronomer.com',
         license = 'Artistic',
         py_modules = [ 'bottle_session' ],
         url = 'https://bitbucket.org/devries/bottle-session',
-        requires = [
-            'bottle (>=0.9)',
+        install_requires = [
+            'bottle >=0.9',
             'redis'
             ],
         classifiers = [
-            'Development Status :: 3 - Alpha',
+            'Development Status :: 4 - Beta',
             'Framework :: Bottle',
             'Intended Audience :: Developers',
             'License :: OSI Approved :: Artistic License',
