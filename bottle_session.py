@@ -11,7 +11,7 @@ Copyright (c) 2013, Christopher De Vries.
 License: Artistic License 2.0 (see LICENSE.txt)
 """
 
-__version__ = '0.1'
+__version__ = '0.3'
 
 import redis
 import inspect
