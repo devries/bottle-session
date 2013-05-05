@@ -32,10 +32,39 @@ except ImportError:
 MAX_TTL = 7*24*3600 # 7 day maximum cookie limit for sessions
 
 class SessionPlugin(object):
+    """Bottle sessions using redis plugin class.
+
+    This class creates a plugin for the bottle framework which uses cookies
+    to handle sessions and stores session information in a redis database.
+    """
+
     name = 'session'
     api = 2
 
     def __init__(self,host='localhost',port=6379,db=0,cookie_name='bottle.session',cookie_lifetime=300,keyword='session'):
+        """Session plugin for the bottle framework.
+
+        Args:
+            host (str): The host name of the redis database server. Defaults to
+                'localhost'.
+            port (int): The port of the redis database server. Defaults to
+                6379.
+            db (int): The redis database numbers. Defaults to 0.
+            cookie_name (str): The name of the browser cookie in which to store
+                the session id. Defaults to 'bottle.session'.
+            cookie_lifetime (int): The lifetime of the cookie in seconds. When
+                the cookie's lifetime expires it will be deleted from the redis
+                database. The browser should also cause it to expire. If the
+                value is 'None' then the cookie will expire from the redis
+                database in 7 days and will be a session cookie on the 
+                browser. The default value is 300 seconds.
+            keyword (str): The bottle plugin keyword. By default this is
+                'session'.
+
+        Returns:
+            A bottle plugin object.
+        """
+
         self.host = host
         self.port = port
         self.db = db
@@ -70,6 +99,14 @@ class SessionPlugin(object):
 
 
 class Session(object):
+    """A bottle session object.
+
+    This object is a dictionary like object in which you can place data
+    associated with the current session. It is created by the bottle
+    framework and accessible using the keyword defined when creating
+    the plugin.
+    """
+
     def __init__(self,rdb,cookie_name='bottle.session',cookie_lifetime=None):
         self.rdb = rdb
         self.cookie_name = cookie_name
@@ -108,10 +145,26 @@ class Session(object):
         self.set_cookie(uid.hex)
 
     def destroy(self):
+        """Destroy the session.
+
+        This function deletes the current session id from the database along
+        with all associated data. It will create a new session id for the
+        remainder of the transaction.
+        """
+
         self.rdb.delete(self.session_hash)
         self.new_session_id()
 
     def regenerate(self):
+        """Regenerate the session id.
+
+        This function creates a new session id and stores all information
+        associated with the current id in that new id. It then destroys the
+        old session id. This is useful for preventing session fixation attacks
+        and should be done whenever someone uses a login to obtain additional
+        authorizaiton.
+        """
+
         oldhash = self.session_hash
         self.new_session_id()
         try:
@@ -121,28 +174,81 @@ class Session(object):
             pass
 
     def __contains__(self,key):
+        """Check if a key is in the session dictionary.
+        
+        Args:
+            key (str): The dictionary key.
+        """
+
         return self.rdb.hexists(self.session_hash,key)
 
     def __delitem__(self,key):
+        """Delete an item from the session dictionary.
+        
+        Args:
+            key (str): The dictionary key.
+        """
+
         self.rdb.hdel(self.session_hash,key)
 
     def __getitem__(self,key):
+        """Return a value associated with a key from the session dictionary.
+        
+        Args:
+            key (str): The dictionary key.
+
+        Returns:
+            str: The value associate with that key or None if the key is
+                not in the dictionary.
+        """
+
         self.rdb.expire(self.session_hash,self.ttl)
         return self.rdb.hget(self.session_hash,key)
 
     def __setitem__(self,key,value):
+        """Set an existing or new key, value association.
+
+        Args:
+            key (str): The dictionary key.
+            value (str): The dictionary value
+        """
+
         self.rdb.hset(self.session_hash,key,value)
         self.rdb.expire(self.session_hash,self.ttl)
 
     def __len__(self):
+        """Get the number of key,value pairs in the dictionary.
+
+        Returns:
+            int: Number of key value pairs in the dictionary.
+        """
+
         return self.rdb.hlen(self.session_hash)
 
     def __iter__(self):
+        """Iterate through the key,value pairs.
+
+        Generates:
+            (str, str): Key and value tuples in the dictionary.
+        """
+
         all_items = self.rdb.hgetall(self.session_hash)
         for t in all_items.items():
             yield t
 
     def get(self,key,default=None):
+        """Get a value from the dictionary.
+
+        Args:
+            key (str): The dictionary key.
+            default (any): The default to return if the key is not in the
+                dictionary. Defaults to None.
+
+        Returns:
+            str or any: The dictionary value or the default if the key is not
+                in the dictionary.
+        """
+
         retval = self.__getitem__(key)
         if not retval:
             retval = default
@@ -150,17 +256,40 @@ class Session(object):
         return retval
 
     def has_key(self,key):
+        """Check if the dictionary contains a key.
+
+        Args:
+            key (str): The dictionary key.
+
+        Returns:
+            bool: True if the key is in the dictionary. False otherwise.
+        """
         return self.__contains__(key)
 
     def items(self):
+        """Return a list of all the key, value pair tuples in the dictionary.
+
+        Returns:
+            list of tuples: [(key1,value1),(key2,value2),...,(keyN,valueN)]
+        """
         all_items = self.rdb.hgetall(self.session_hash)
         return all_items.items()
 
     def keys(self):
+        """Return a list of all keys in the dictionary.
+
+        Returns:
+            list of str: [key1,key2,...,keyN]
+        """
         all_items = self.rdb.hgetall(self.session_hash)
         return all_items.keys()
 
     def values(self):
+        """Returns a list of all values in the dictionary.
+
+        Returns:
+            list of str: [value1,value2,...,valueN]
+        """
         all_items = self.rdb.hgetall(self.session_hash)
         return all_items.values()
 
