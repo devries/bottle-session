@@ -20,7 +20,7 @@ or you can download the latest version from bitbucket:
 
 Requirements
 ------------
-In order to use bottle-session you must have the both the redis and of course
+In order to use bottle-session you must have both the redis and of course the
 bottle modules installed. I recommend also installing pycrypto, although it is
 not required. If pycrypto is installed, then the pycrypto random number
 generator is used to generate session cookies, otherwise python's internal
