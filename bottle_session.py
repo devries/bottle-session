@@ -11,7 +11,7 @@ Copyright (c) 2013, Christopher De Vries.
 License: Artistic License 2.0 (see LICENSE.txt)
 """
 
-__version__ = '0.4a1'
+__version__ = '0.4'
 
 import redis
 import inspect
@@ -80,8 +80,8 @@ class SessionPlugin(object):
                 raise PluginError("Found another session plugin with "\
                         "conflicting settings (non-unique keyword).")
 
-            if self.connection_pool is None:
-                self.connection_pool = redis.ConnectionPool(host=self.host, port=self.port, db=self.db)
+        if self.connection_pool is None:
+            self.connection_pool = redis.ConnectionPool(host=self.host, port=self.port, db=self.db)
 
     def apply(self,callback,context):
         conf = context.config.get('session') or {}
