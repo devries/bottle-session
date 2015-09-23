@@ -42,8 +42,8 @@ Next, initialize the plugin:
     app.install(plugin)
 
 The `cookie_lifetime` parameter is the lifetime of the cookie in seconds, if
-the lifetime is set to **None** it will last 1 week. The `SessionPlugin` class
-initializer takes several optional parameters:
+the lifetime is explicitly set to **None** it will last 1 week. The
+`SessionPlugin` class initializer takes several optional parameters:
 
 - `host` is the host for the redis instance. It defaults to `localhost`.
 - `port` is the port for the redis instance. It defaults to `6379`.

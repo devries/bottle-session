@@ -11,8 +11,9 @@ Copyright (c) 2013, Christopher De Vries.
 License: Artistic License 2.0 (see LICENSE.txt)
 """
 
-__version__ = '0.4'
+__version__ = '0.5a1'
 
+from __future__ import absolute_import
 import redis
 import inspect
 from bottle import PluginError
@@ -233,7 +234,7 @@ class Session(object):
         """
 
         all_items = self.rdb.hgetall(self.session_hash)
-        for t in all_items.items():
+        for t in list(all_items.items()):
             yield t
 
     def get(self,key,default=None):
@@ -273,7 +274,7 @@ class Session(object):
             list of tuples: [(key1,value1),(key2,value2),...,(keyN,valueN)]
         """
         all_items = self.rdb.hgetall(self.session_hash)
-        return all_items.items()
+        return list(all_items.items())
 
     def keys(self):
         """Return a list of all keys in the dictionary.
@@ -282,7 +283,7 @@ class Session(object):
             list of str: [key1,key2,...,keyN]
         """
         all_items = self.rdb.hgetall(self.session_hash)
-        return all_items.keys()
+        return list(all_items.keys())
 
     def values(self):
         """Returns a list of all values in the dictionary.
@@ -291,5 +292,5 @@ class Session(object):
             list of str: [value1,value2,...,valueN]
         """
         all_items = self.rdb.hgetall(self.session_hash)
-        return all_items.values()
+        return list(all_items.values())
 

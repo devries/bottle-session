@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import print_function
 from distutils.core import setup
 import re
 import subprocess
@@ -20,7 +22,7 @@ try:
 
 except:
     # If that it not possible, use Markdown readme
-    print "Pandoc command failed, using markdown README"
+    print("Pandoc command failed, using markdown README")
     readme = open('README.md').read()
 
 setup(
