@@ -10,16 +10,16 @@ on the website: https://bitbucket.org/devries/bottle-session
 Copyright (c) 2013, Christopher De Vries.
 License: Artistic License 2.0 (see LICENSE.txt)
 """
-
-__version__ = '0.5a1'
-
 from __future__ import absolute_import
+
 import redis
 import inspect
 from bottle import PluginError
 from bottle import request
 from bottle import response
 import uuid
+
+__version__ = '0.5a2'
 
 try:
     from Crypto.Random import get_random_bytes
