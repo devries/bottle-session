@@ -19,7 +19,7 @@ from bottle import request
 from bottle import response
 import uuid
 
-__version__ = '0.5a3'
+__version__ = '0.5a4'
 
 try:
     from Crypto.Random import get_random_bytes
@@ -204,7 +204,11 @@ class Session(object):
         """
 
         self.rdb.expire(self.session_hash,self.ttl)
-        return self.rdb.hget(self.session_hash,key).decode('utf-8')
+        encoded_result = self.rdb.hget(self.session_hash,key)
+        if encoded_result is None:
+            return None
+        else:
+            return encoded_result.decode('utf-8')
 
     def __setitem__(self,key,value):
         """Set an existing or new key, value association.
@@ -274,7 +278,7 @@ class Session(object):
             list of tuples: [(key1,value1),(key2,value2),...,(keyN,valueN)]
         """
         all_items = [(k.decode('utf-8'),v.decode('utf-8')) for k,v in self.rdb.hgetall(self.session_hash)]
-        return all_items.items()
+        return all_items
 
     def keys(self):
         """Return a list of all keys in the dictionary.
