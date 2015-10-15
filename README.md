@@ -58,7 +58,7 @@ method:
     :::python
     @bottle.route('/')
     def index(session):
-        user_name = session.get('name'):
+        user_name = session.get('name')
         if user_name is not None:
             return "Hello, %s"%user_name
         else:
