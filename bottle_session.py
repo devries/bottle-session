@@ -19,7 +19,7 @@ from bottle import request
 from bottle import response
 import uuid
 
-__version__ = '0.5a4'
+__version__ = '0.5'
 
 try:
     from Crypto.Random import get_random_bytes
