@@ -13,7 +13,6 @@ License: Artistic License 2.0 (see LICENSE.txt)
 from __future__ import absolute_import
 
 import redis
-import inspect
 from bottle import PluginError
 from bottle import request
 from bottle import response
@@ -86,7 +85,7 @@ class SessionPlugin(object):
 
     def apply(self,callback,context):
         conf = context.config.get('session') or {}
-        args = inspect.getargspec(context.callback)[0]
+        args = context.get_callback_args()
 
         if self.keyword not in args:
             return callback
