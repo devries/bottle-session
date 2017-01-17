@@ -7,15 +7,15 @@ import redis
 import string
 
 app = bottle.app()
-session_plugin = bottle_session.SessionPlugin(cookie_lifetime=bottle_session.MAX_TTL)
+session_plugin = bottle_session.SessionPlugin(password='foobared',cookie_lifetime=bottle_session.MAX_TTL)
 
-redis_url = os.environ.get('REDIS_URL','http://localhost:6379')
+#redis_url = os.environ.get('REDIS_URL','http://:foobared@localhost:6379')
 
-parsed_url = urlparse.urlparse(redis_url)
+#parsed_url = urlparse.urlparse(redis_url)
 
-connection_pool = redis.ConnectionPool(host=parsed_url.hostname, port=parsed_url.port, password=parsed_url.password)
+#connection_pool = redis.ConnectionPool(host=parsed_url.hostname, port=parsed_url.port, password=parsed_url.password)
 
-session_plugin.connection_pool = connection_pool
+#session_plugin.connection_pool = connection_pool
 
 app.install(session_plugin)
 

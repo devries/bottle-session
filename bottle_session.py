@@ -18,7 +18,7 @@ from bottle import request
 from bottle import response
 import uuid
 
-__version__ = '0.6'
+__version__ = '0.7'
 
 try:
     from Crypto.Random import get_random_bytes
@@ -41,7 +41,7 @@ class SessionPlugin(object):
     name = 'session'
     api = 2
 
-    def __init__(self,host='localhost',port=6379,db=0,cookie_name='bottle.session',cookie_lifetime=300,keyword='session'):
+    def __init__(self,host='localhost',port=6379,db=0,cookie_name='bottle.session',cookie_lifetime=300,keyword='session',password=None):
         """Session plugin for the bottle framework.
 
         Args:
@@ -60,6 +60,7 @@ class SessionPlugin(object):
                 browser. The default value is 300 seconds.
             keyword (str): The bottle plugin keyword. By default this is
                 'session'.
+            password (str): The optional redis password.
 
         Returns:
             A bottle plugin object.
@@ -71,6 +72,7 @@ class SessionPlugin(object):
         self.cookie_name = cookie_name
         self.cookie_lifetime = cookie_lifetime
         self.keyword = keyword
+        self.password = password
         self.connection_pool = None
 
     def setup(self,app):
@@ -81,7 +83,7 @@ class SessionPlugin(object):
                         "conflicting settings (non-unique keyword).")
 
         if self.connection_pool is None:
-            self.connection_pool = redis.ConnectionPool(host=self.host, port=self.port, db=self.db)
+            self.connection_pool = redis.ConnectionPool(host=self.host, port=self.port, db=self.db, password=self.password)
 
     def apply(self,callback,context):
         conf = context.config.get('session') or {}
