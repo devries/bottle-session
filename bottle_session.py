@@ -137,7 +137,7 @@ class Session(object):
         if self.rdb.exists(keycheck):
             self.session_hash = keycheck
             self.rdb.expire(self.session_hash,self.ttl)
-        
+            self.set_cookie(cookie_value)
         else:
             self.new_session_id()
 
