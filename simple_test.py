@@ -7,7 +7,7 @@ import redis
 import string
 
 app = bottle.app()
-session_plugin = bottle_session.SessionPlugin(password='foobared',cookie_lifetime=bottle_session.MAX_TTL)
+session_plugin = bottle_session.SessionPlugin(cookie_lifetime=bottle_session.MAX_TTL)
 
 #redis_url = os.environ.get('REDIS_URL','http://:foobared@localhost:6379')
 

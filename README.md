@@ -122,4 +122,5 @@ Acknowledgments
 ---------------
 Thanks to Marcel Hellkamp and the bottle community for the framework and to
 Sean M. Collins whose bottle-redis package in bottle-extras served as the
-inspiration for this bottle plugin.
+inspiration for this bottle plugin. Thank you to James Burke for
+your contributions.
