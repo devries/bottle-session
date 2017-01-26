@@ -19,7 +19,7 @@ from bottle import request
 from bottle import response
 import uuid
 
-__version__ = '0.7'
+__version__ = '0.8'
 
 try:
     from Crypto.Random import get_random_bytes
@@ -90,7 +90,7 @@ class SessionPlugin(object):
         conf = context.config.get('session') or {}
         # args = context.get_callback_args()
 
-        # Update for python 3.5+ but fallback to python 2.7+ compatible
+        # Update for python 3.4+ but fallback to python 2.7+ compatible
         # argument inspection. This is similar to bottle-sqlalchemy code and
         # bottle-redis.
         try:
