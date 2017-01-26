@@ -1,7 +1,10 @@
 import os
 import bottle
 import bottle_session
-import urlparse
+try:
+    import urlparse
+except:
+    from urllib import parse as urlparse
 import random
 import redis
 import string
@@ -41,7 +44,7 @@ def get_main_page(session):
 def set_name(session):
     keys = bottle.request.forms.keys()
 
-    session['name'] = bottle.request.forms.get('name').strip()
+    session['name'] = bottle.request.forms.name.strip()
     csrf = bottle.request.forms.get('csrf_token')
 
     if session['csrf']!=csrf:
