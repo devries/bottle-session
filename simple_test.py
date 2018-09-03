@@ -8,6 +8,15 @@ except:
 import random
 import redis
 import string
+import logging
+
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 app = bottle.app()
 session_plugin = bottle_session.SessionPlugin(cookie_lifetime=bottle_session.MAX_TTL)
@@ -27,6 +36,16 @@ def get_main_page(session):
     csrf = ''.join(random.choice(string.ascii_uppercase+string.ascii_lowercase+string.digits) for x in range(32))
 
     session['csrf'] = csrf
+
+    logger.debug("Items")
+    for k,v in session.items():
+        logger.debug("%s:%s",k,v)
+
+    keys = session.keys()
+    logger.debug("Keys: %s", ', '.join(keys))
+
+    values = session.values()
+    logger.debug("Values: %s", ', '.join(values))
 
     if session.get('name') is None:
         context = {'csrf_token': csrf}

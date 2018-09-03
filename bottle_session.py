@@ -19,7 +19,7 @@ from bottle import request
 from bottle import response
 import uuid
 
-__version__ = '0.8'
+__version__ = '0.9'
 
 try:
     from Crypto.Random import get_random_bytes
@@ -287,7 +287,7 @@ class Session(object):
         Returns:
             list of tuples: [(key1,value1),(key2,value2),...,(keyN,valueN)]
         """
-        all_items = [(k.decode('utf-8'),v.decode('utf-8')) for k,v in self.rdb.hgetall(self.session_hash)]
+        all_items = [(k.decode('utf-8'),v.decode('utf-8')) for k,v in self.rdb.hgetall(self.session_hash).items()]
         return all_items
 
     def keys(self):
@@ -296,7 +296,7 @@ class Session(object):
         Returns:
             list of str: [key1,key2,...,keyN]
         """
-        all_keys = [k.decode('utf-8') for k,v in self.rdb.hgetall(self.session_hash)]
+        all_keys = [k.decode('utf-8') for k,v in self.rdb.hgetall(self.session_hash).items()]
         return all_keys
 
     def values(self):
@@ -305,6 +305,6 @@ class Session(object):
         Returns:
             list of str: [value1,value2,...,valueN]
         """
-        all_values = [v.decode('utf-8') for k,v in self.rdb.hgetall(self.session_hash)]
+        all_values = [v.decode('utf-8') for k,v in self.rdb.hgetall(self.session_hash).items()]
         return all_values
 
