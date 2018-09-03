@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
 from __future__ import print_function
-from distutils.core import setup
+#from distutils.core import setup
+import setuptools
 import re
 import subprocess
 
@@ -25,7 +26,7 @@ except:
     print("Pandoc command failed, using markdown README")
     readme = open('README.md').read()
 
-setup(
+setuptools.setup(
         name = 'bottle-session',
         version = version,
         description = 'Redis based sessions for bottle.',
