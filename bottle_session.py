@@ -42,7 +42,7 @@ class SessionPlugin(object):
     name = 'session'
     api = 2
 
-    def __init__(self,host='localhost',port=6379,db=0,cookie_name='bottle.session',cookie_lifetime=300,keyword='session',password=None):
+    def __init__(self,host='localhost',port=6379,db=0,cookie_name='bottle.session',cookie_lifetime=300,keyword='session',password=None, cookie_secure=False, cookie_httponly=False):
         """Session plugin for the bottle framework.
 
         Args:
@@ -72,6 +72,8 @@ class SessionPlugin(object):
         self.db = db
         self.cookie_name = cookie_name
         self.cookie_lifetime = cookie_lifetime
+        self.cookie_secure = cookie_secure
+        self.cookie_httponly = cookie_httponly
         self.keyword = keyword
         self.password = password
         self.connection_pool = None
@@ -139,7 +141,7 @@ class Session(object):
         return uid_cookie
 
     def set_cookie(self,value):
-        response.set_cookie(self.cookie_name,value,max_age=self.max_age,path='/')
+        response.set_cookie(self.cookie_name,value,max_age=self.max_age,path='/', secure=self.cookie_secure, httponly=self.cookie_httponly)
 
     def validate_session_id(self,cookie_value):
         keycheck = 'session:%s'%str(uuid.UUID(cookie_value))
