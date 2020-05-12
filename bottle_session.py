@@ -105,7 +105,7 @@ class SessionPlugin(object):
 
         def wrapper(*args,**kwargs):
             r = redis.Redis(connection_pool=self.connection_pool)
-            kwargs[self.keyword] = Session(r,self.cookie_name,self.cookie_lifetime)
+            kwargs[self.keyword] = Session(r,self.cookie_name,self.cookie_lifetime, self.cookie_secure, self.cookie_httponly)
             rv = callback(*args,**kwargs)
             return rv
         return wrapper
@@ -120,9 +120,11 @@ class Session(object):
     the plugin.
     """
 
-    def __init__(self,rdb,cookie_name='bottle.session',cookie_lifetime=None):
+    def __init__(self,rdb,cookie_name='bottle.session',cookie_lifetime=None, cookie_secure=False, cookie_httponly=False):
         self.rdb = rdb
         self.cookie_name = cookie_name
+        self.cookie_secure = cookie_secure
+        self.cookie_httponly = cookie_httponly
         if cookie_lifetime is None:
             self.ttl = MAX_TTL
             self.max_age = None
