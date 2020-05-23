@@ -51,9 +51,9 @@ the lifetime is explicitly set to **None** it will last 1 week. The
 - `cookie_name` is the name of the session cookie. It defaults to
   `bottle.session`.
 - `cookie_secure` is a boolean variable to set the Secure cookie flag.
-   It defaults to false.
+   It defaults to `False`.
 - `cookie_httponly` is a boolean variable to set the HttpOnly cookie flag.
-   It defaults to false.
+   It defaults to `False`.
 - `keyword` is the plugin keyword. It defaults to `session`.
 - `password` is the optional password for the redis instance. It defaults to
   none.
