@@ -12,12 +12,13 @@ del modcontents
 
 try:
     # Convert README to rst
-    p = subprocess.Popen(['pandoc','-S','-f','markdown','-t','rst','README.md'],stdout=subprocess.PIPE)
+    p = subprocess.Popen(['pandoc','-f','markdown','-t','rst','README.md'],stdout=subprocess.PIPE)
     readme_list = []
     format_re = re.compile(r':::python')
     for line in p.stdout:
-        if not format_re.search(line):
-            readme_list.append(line)
+        text_line = line.decode('utf-8')
+        if not format_re.search(text_line):
+            readme_list.append(text_line)
 
     readme = ''.join(readme_list)
 
