@@ -19,7 +19,7 @@ from bottle import request
 from bottle import response
 import uuid
 
-__version__ = '0.9'
+__version__ = '1.0'
 
 try:
     from Crypto.Random import get_random_bytes
@@ -146,7 +146,12 @@ class Session(object):
         response.set_cookie(self.cookie_name,value,max_age=self.max_age,path='/', secure=self.cookie_secure, httponly=self.cookie_httponly)
 
     def validate_session_id(self,cookie_value):
-        keycheck = 'session:%s'%str(uuid.UUID(cookie_value))
+        try:
+            keycheck = 'session:%s'%str(uuid.UUID(cookie_value))
+        except:
+            self.new_session_id()
+            return
+
         if self.rdb.exists(keycheck):
             self.session_hash = keycheck
             self.rdb.expire(self.session_hash,self.ttl)

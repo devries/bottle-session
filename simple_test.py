@@ -19,7 +19,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
 app = bottle.app()
-session_plugin = bottle_session.SessionPlugin(cookie_lifetime=bottle_session.MAX_TTL)
+session_plugin = bottle_session.SessionPlugin(cookie_lifetime=bottle_session.MAX_TTL, cookie_secure=True, cookie_httponly=True)
 
 #redis_url = os.environ.get('REDIS_URL','http://:foobared@localhost:6379')
 
